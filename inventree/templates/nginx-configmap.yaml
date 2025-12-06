@@ -1,0 +1,77 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: nginx-proxy-config
+data:
+  # Based on recommended configuration from Gunicorn documentation:
+  # https://docs.gunicorn.org/en/latest/deploy.html
+  default.conf: |-
+      # TODO: Improved security once we figure out how to populate
+      # `server_name` with ingresses in server block below...
+      #server {
+      #  # if no Host match, close the connection to prevent host spoofing
+      #  listen 80 default_server;
+      #  return 444;
+      #}
+
+      server {
+        # use 'listen 80 deferred;' for Linux
+        # use 'listen 80 accept_filter=httpready;' for FreeBSD
+        listen 80 default_server;
+        client_max_body_size 4G;
+    
+        # TODO: Populate with allowed ingresses?
+        #server_name example.com www.example.com;
+    
+        keepalive_timeout 5;
+    
+        root /var/www/;
+    
+        location /static/ {
+          alias /var/www/static/;
+          autoindex off;
+
+          # Caching settings
+          expires 30d;
+          add_header Pragma public;
+          add_header Cache-Control "public";
+        }
+
+        # Media files require user authentication
+        location /media/ {
+          alias /var/www/media/;
+          auth_request /auth;
+        }
+
+        location /auth {
+          internal;
+
+          proxy_pass http://127.0.0.1:{{ $.Values.service.port }}/auth/;
+          proxy_pass_request_body off;
+          proxy_set_header Content-Length "";
+          proxy_set_header X-Original-URI $request_uri;
+        }
+
+        location / {
+          # checks for static file, if not found proxy to app
+          try_files $uri @app;
+        }
+
+        location @app {
+          proxy_pass http://127.0.0.1:{{ $.Values.service.port }};
+          proxy_http_version 1.1;
+          proxy_set_header Upgrade $http_upgrade;
+          proxy_set_header Connection 'upgrade';
+          proxy_set_header Host $http_host;
+          proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+          proxy_set_header X-Forwarded-Proto $scheme;
+          proxy_redirect off;
+          proxy_cache_bypass $http_upgrade;
+        }
+    
+        # TODO: Error templates?
+        error_page 500 502 503 504 /500.html;
+        location = /500.html {
+          root /path/to/app/current/public;
+        }
+      }

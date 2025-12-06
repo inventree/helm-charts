@@ -1,0 +1,96 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "inventree.fullname" . }}-worker
+  labels:
+    {{- include "inventree.worker.labels" . | nindent 4 }}
+spec:
+  {{- if not .Values.worker.autoscaling.enabled }}
+  replicas: {{ .Values.worker.replicaCount }}
+  {{- end }}
+  selector:
+    matchLabels:
+      {{- include "inventree.worker.selectorLabels" . | nindent 6 }}
+  template:
+    metadata:
+      {{- with .Values.worker.podAnnotations }}
+      annotations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      labels:
+        {{- include "inventree.worker.labels" . | nindent 8 }}
+        {{- with .Values.worker.podLabels }}
+        {{- toYaml . | nindent 8 }}
+        {{- end }}
+    spec:
+      {{- with .Values.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      serviceAccountName: {{ include "inventree.serviceAccountName" . }}
+      {{- with .Values.worker.podSecurityContext }}
+      securityContext:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      containers:
+        - name: {{ .Chart.Name }}
+          {{- with .Values.worker.securityContext }}
+          securityContext:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          command: ['invoke', 'worker']
+          #ports:
+          #  - name: http
+          #    containerPort: {{ .Values.worker.service.port }}
+          #    protocol: TCP
+          env:
+            - name: INVENTREE_SITE_URL
+              value: {{ .Values.global.siteUrl }}
+            {{- if not (empty .Values.global.cacheSecrets) }}
+            - name: INVENTREE_CACHE_ENABLED
+              value: "True"
+            {{- end -}}
+{{- (include "inventree.renderSecrets" (dict "data" .Values.global.cacheSecrets)) | nindent 10 -}}
+          {{- (include "inventree.renderSecrets" (dict "data" .Values.global.dbSecrets)) | nindent 10 }}
+          {{/*
+          # TODO: Figure out a way to check status
+          {{- with .Values.worker.livenessProbe }}
+          livenessProbe:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
+          {{- with .Values.worker.readinessProbe }}
+          readinessProbe:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
+          #*/}}
+          {{- with .Values.worker.resources }}
+          resources:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
+          volumeMounts:
+            - name: inventree-data
+              mountPath: /home/inventree/data
+          {{- with .Values.worker.volumeMounts }}
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
+      volumes:
+        - name: inventree-data
+          persistentVolumeClaim:
+            claimName: inventree-data
+      {{- with .Values.worker.volumes }}
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.worker.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.worker.affinity }}
+      affinity:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.worker.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}

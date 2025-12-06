@@ -1,0 +1,7 @@
+{{/* Render Ingress objects */}}
+{{- $rootContext := . -}}
+{{- $enabledIngresses := (include "ingress.getEnabled" (dict "rootContext" $rootContext) | fromYaml ) -}}
+{{- range $id := keys $enabledIngresses -}}
+  {{- $ingressObject := (include "ingress.getById" (dict "rootContext" $rootContext "id" $id) | fromYaml) -}}
+  {{- include "ingress.renderObject" (dict "rootContext" $rootContext "object" $ingressObject) | nindent 0 -}}
+{{- end -}}

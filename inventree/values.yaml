@@ -1,0 +1,241 @@
+# Default values for inventree.
+# This is a YAML-formatted file.
+# Declare variables to be passed into your templates.
+
+# This will set the replicaset count more information can be found here: https://kubernetes.io/docs/concepts/workloads/controllers/replicaset/
+replicaCount: 1
+
+global:
+  # Base URL for the InvenTree server. Make sure to override!
+  siteUrl: "http://inventree.local"
+
+  # Secret name which contains credentials for Inventree Administrator Account,
+  # with following required keys:
+  # - INVENTREE_ADMIN_USER
+  # - INVENTREE_ADMIN_PASSWORD
+  # - INVENTREE_ADMIN_EMAIL
+  adminSecret: ""
+
+  # Cache (redis or valkey) configuration and credentials
+  cacheSecrets: []
+  # Example:
+  # Secrets can be specified either by {name, value}:
+  # - name: INVENTREE_CACHE_HOST
+  #   value: valkey.database
+  # Or by referencing values from pre-existing secrets:
+  # - name: INVENTREE_CACHE_PASSWORD
+  #   valueFrom:
+  #     secretKeyRef:
+  #       name: "valkey-inventree-creds"
+  #       key: password
+
+  # Database configuration and credentials
+  dbSecrets: []
+  # Example:
+  # Secrets can be specified either by {name, value}:
+  # - name: INVENTREE_DB_ENGINE
+  #   value: "postgresql"
+  # Or by referencing values from pre-existing secrets:
+  # - name: INVENTREE_DB_NAME
+  #   valueFrom:
+  #     secretKeyRef:
+  #       name: "inventree-cluster-app"
+  #       key: dbname
+
+plugins:
+  enabled: True
+
+# This sets the container image more information can be found here: https://kubernetes.io/docs/concepts/containers/images/
+image:
+  repository: inventree/inventree
+  # This sets the pull policy for images.
+  pullPolicy: IfNotPresent
+  # Overrides the image tag whose default is the chart appVersion.
+  tag: ""
+
+# Inventree requires running a proxy container in front of application.
+# Defaults to nginx stable image
+serviceProxy:
+    image: nginx
+    tag: stable
+
+# This is for the secrets for pulling an image from a private repository more information can be found here: https://kubernetes.io/docs/tasks/configure-pod-container/pull-image-private-registry/
+imagePullSecrets: []
+# This is to override the chart name.
+nameOverride: ""
+fullnameOverride: ""
+
+# This section builds out the service account more information can be found here: https://kubernetes.io/docs/concepts/security/service-accounts/
+serviceAccount:
+  # Specifies whether a service account should be created
+  create: true
+  # Automatically mount a ServiceAccount's API credentials?
+  automount: true
+  # Annotations to add to the service account
+  annotations: {}
+  # The name of the service account to use.
+  # If not set and create is true, a name is generated using the fullname template
+  name: ""
+
+# This is for setting Kubernetes Annotations to a Pod.
+# For more information checkout: https://kubernetes.io/docs/concepts/overview/working-with-objects/annotations/
+podAnnotations: {}
+# This is for setting Kubernetes Labels to a Pod.
+# For more information checkout: https://kubernetes.io/docs/concepts/overview/working-with-objects/labels/
+podLabels: {}
+
+podSecurityContext: {}
+  # fsGroup: 2000
+
+securityContext: {}
+  # capabilities:
+  #   drop:
+  #   - ALL
+  # readOnlyRootFilesystem: true
+  # runAsNonRoot: true
+  # runAsUser: 1000
+
+# This is for setting up a service more information can be found here: https://kubernetes.io/docs/concepts/services-networking/service/
+service:
+  # This sets the service type more information can be found here: https://kubernetes.io/docs/concepts/services-networking/service/#publishing-services-service-types
+  type: ClusterIP
+  # This sets the ports more information can be found here: https://kubernetes.io/docs/concepts/services-networking/service/#field-spec-ports
+  port: 8000
+
+# -- Configure Ingresses for Inventree application
+ingress:
+  {}
+  # -- An example
+  # main:
+  #   # -- Enables/disables the ingress - https://kubernetes.io/docs/concepts/services-networking/ingress/
+  #   enabled: true
+  #
+  #   # -- Override the name suffix that is used for this ingress.
+  #   nameOverride:
+  #
+  #   # -- Provide additional annotations which may be required. Helm templates can be used.
+  #   annotations: {}
+  #
+  #   # -- Provide additional labels which may be required. Helm templates can be used.
+  #   labels: {}
+  #
+  #   # -- Set the ingressClass that is used for this ingress.
+  #   className:
+  #
+  #   ## Configure the hosts for the ingress
+  #   hosts:
+  #     - # -- Host address. Helm template can be passed.
+  #       host: inventree.local
+  #       ## Configure the paths for the host
+  #       paths:
+  #         - # -- Path.  Helm template can be passed.
+  #           path: /
+  #           pathType: Prefix
+  #   # -- Configure TLS for the ingress. Both secretName and hosts can process a Helm template.
+  #   tls: []
+  #   #  - secretName: inventree-tls
+  #   #    hosts:
+  #   #      - inventree.local
+
+
+# -- Expose the service via gateway-api HTTPRoute
+# Requires Gateway API resources and suitable controller installed within the cluster
+# (see: https://gateway-api.sigs.k8s.io/guides/)
+httpRoute:
+  # HTTPRoute enabled.
+  enabled: false
+  # HTTPRoute annotations.
+  annotations: {}
+  # Which Gateways this Route is attached to.
+  parentRefs:
+  - name: gateway
+    sectionName: http
+    # namespace: default
+  # Hostnames matching HTTP header.
+  hostnames:
+  - chart-example.local
+  # List of rules and filters applied.
+  rules:
+  - matches:
+    - path:
+        type: PathPrefix
+        value: /headers
+  #   filters:
+  #   - type: RequestHeaderModifier
+  #     requestHeaderModifier:
+  #       set:
+  #       - name: My-Overwrite-Header
+  #         value: this-is-the-only-value
+  #       remove:
+  #       - User-Agent
+  # - matches:
+  #   - path:
+  #       type: PathPrefix
+  #       value: /echo
+  #     headers:
+  #     - name: version
+  #       value: v2
+
+resources: {}
+  # We usually recommend not to specify default resources and to leave this as a conscious
+  # choice for the user. This also increases chances charts run on environments with little
+  # resources, such as Minikube. If you do want to specify resources, uncomment the following
+  # lines, adjust them as necessary, and remove the curly braces after 'resources:'.
+  # limits:
+  #   cpu: 100m
+  #   memory: 128Mi
+  # requests:
+  #   cpu: 100m
+  #   memory: 128Mi
+
+# This is to setup the liveness and readiness probes more information can be found here: https://kubernetes.io/docs/tasks/configure-pod-container/configure-liveness-readiness-startup-probes/
+livenessProbe:
+  httpGet:
+    path: /
+    port: http
+readinessProbe:
+  httpGet:
+    path: /
+    port: http
+
+# This section is for setting up autoscaling more information can be found here: https://kubernetes.io/docs/concepts/workloads/autoscaling/
+autoscaling:
+  enabled: false
+  minReplicas: 1
+  maxReplicas: 100
+  targetCPUUtilizationPercentage: 80
+  # targetMemoryUtilizationPercentage: 80
+
+# Additional volumes on the output Deployment definition.
+volumes: []
+# - name: foo
+#   secret:
+#     secretName: mysecret
+#     optional: false
+
+# Additional volumeMounts on the output Deployment definition.
+volumeMounts: []
+# - name: foo
+#   mountPath: "/etc/foo"
+#   readOnly: true
+
+nodeSelector: {}
+
+tolerations: []
+
+affinity: {}
+
+# Definitions for inventree worker daemon
+worker:
+  # This section is for setting up autoscaling more information can be found here: https://kubernetes.io/docs/concepts/workloads/autoscaling/
+  autoscaling:
+    enabled: false
+    minReplicas: 1
+    maxReplicas: 100
+    targetCPUUtilizationPercentage: 80
+    # targetMemoryUtilizationPercentage: 80
+  service:
+    # This sets the service type more information can be found here: https://kubernetes.io/docs/concepts/services-networking/service/#publishing-services-service-types
+    type: ClusterIP
+    # This sets the ports more information can be found here: https://kubernetes.io/docs/concepts/services-networking/service/#field-spec-ports
+    port: 8000
