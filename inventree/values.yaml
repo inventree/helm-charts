@@ -42,6 +42,10 @@ global:
   #       name: "inventree-cluster-app"
   #       key: dbname
 
+  # Whether to run initContainer which handles database migrations and
+  # prepares static data for web frontend.
+  initEnabled: True
+
 plugins:
   enabled: True
 

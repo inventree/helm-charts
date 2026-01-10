@@ -23,6 +23,7 @@ spec:
         {{- toYaml . | nindent 8 }}
         {{- end }}
     spec:
+      {{- if .Values.global.initEnabled }}
       initContainers:
         - name: init
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
@@ -39,6 +40,7 @@ spec:
             - name: INVENTREE_SITE_URL
               value: {{ .Values.global.siteUrl }}
           {{- (include "inventree.renderSecrets" (dict "data" .Values.global.dbSecrets)) | nindent 10 -}}
+      {{- end -}}
       {{- with .Values.imagePullSecrets }}
       imagePullSecrets:
         {{- toYaml . | nindent 8 }}
