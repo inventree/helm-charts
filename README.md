@@ -5,11 +5,11 @@ Helm's [documentation](https://helm.sh/docs) to get started.
 
 Once Helm has been set up correctly, add the repo as follows:
 
-  helm repo add inventree https://inventree.github.io/helm-chart
+    helm repo add inventree https://inventree.github.io/helm-charts
 
 If you had already added this repo earlier, run `helm repo update` to retrieve
 the latest versions of the packages.  You can then run `helm search repo
-trendmend` to see the charts.
+inventree` to see the charts.
 
 To install the inventree chart:
 
