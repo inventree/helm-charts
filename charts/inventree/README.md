@@ -1,4 +1,4 @@
-# inventree
+# Official Inventree Chart
 
 ![Version: 0.3.4](https://img.shields.io/badge/Version-0.3.4-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 1.1.11](https://img.shields.io/badge/AppVersion-1.1.11-informational?style=flat-square)
 
@@ -51,7 +51,9 @@ To uninstall the chart:
 | global.initEnabled | bool | `true` |  |
 | global.siteUrl | string | `"http://inventree.local"` |  |
 | global.ssoConfig.backends | list | `[]` |  |
-| global.ssoConfig.providerSecretName | string | `nil` |  |
+| global.ssoConfig.createSecret | bool | `false` |  |
+| global.ssoConfig.providers | object | `{}` |  |
+| global.ssoConfig.providerSecretName | string | `""` |  |
 | httpRoute | object | `{"annotations":{},"enabled":false,"hostnames":["chart-example.local"],"parentRefs":[{"name":"gateway","sectionName":"http"}],"rules":[{"matches":[{"path":{"type":"PathPrefix","value":"/headers"}}]}]}` | Expose the service via gateway-api HTTPRoute Requires Gateway API resources and suitable controller installed within the cluster (see: https://gateway-api.sigs.k8s.io/guides/) NB! Note that `httpRoute` is not fully integrated with Inventree application: TODO: `hostNames` should be properly included in INVENTREE_TRUSTED_ORIGINS and nginx `server_name` configuration. |
 | image.pullPolicy | string | `"IfNotPresent"` |  |
 | image.repository | string | `"inventree/inventree"` |  |
