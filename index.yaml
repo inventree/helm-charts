@@ -3,6 +3,24 @@ entries:
   inventree:
   - apiVersion: v2
     appVersion: 1.1.12
+    created: "2026-02-12T20:36:39.621354389Z"
+    description: Helm chart for InvenTree - The Open Source Inventory and PLM Solution
+    digest: 978e2e45bcdb7eae44c6d04dd5605b1cb403f5dd19684ab55836998a7731f273
+    home: https://inventree.org/
+    icon: https://raw.githubusercontent.com/inventree/InvenTree/refs/heads/master/assets/images/logo/inventree.svg
+    keywords:
+    - manufacturing
+    - PLM
+    - inventory management
+    name: inventree
+    sources:
+    - https://github.com/inventree/InvenTree/
+    type: application
+    urls:
+    - https://github.com/inventree/helm-charts/releases/download/inventree-0.3.6/inventree-0.3.6.tgz
+    version: 0.3.6
+  - apiVersion: v2
+    appVersion: 1.1.12
     created: "2026-02-12T07:07:03.949128245Z"
     description: Helm chart for InvenTree - The Open Source Inventory and PLM Solution
     digest: e16ddee50b7af00e6af50b7c23bf5acbd048c8b17815fda3583fdcb3c73f5425
@@ -47,4 +65,4 @@ entries:
     urls:
     - https://github.com/inventree/helm-charts/releases/download/inventree-0.3.3/inventree-0.3.3.tgz
     version: 0.3.3
-generated: "2026-02-12T07:07:03.949145478Z"
+generated: "2026-02-12T20:36:39.621371361Z"
