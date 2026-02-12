@@ -8,7 +8,7 @@ keywords:
 home: https://inventree.org/
 sources:
   - https://github.com/inventree/InvenTree/
-icon: https://github.com/inventree/InvenTree/blob/master/assets/images/logo/inventree.svg
+icon: https://raw.githubusercontent.com/inventree/InvenTree/refs/heads/master/assets/images/logo/inventree.svg
 type: application
 
 # Version info - CHANGEME
