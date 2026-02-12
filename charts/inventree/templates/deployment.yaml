@@ -72,15 +72,19 @@ spec:
               value: "True"
             {{- end -}}
             {{- with .Values.global.ssoConfig }}
+            {{- $secretName := .providerSecretName -}}
+            {{- if and (not $secretName) .createSecret (not (empty .providers)) -}}
+            {{- $secretName = printf "%s-sso" (include "inventree.fullname" $) -}}
+            {{- end -}}
             {{- if .backends }}
             - name: INVENTREE_SOCIAL_BACKENDS
               value: {{ join "," .backends |squote }}
             {{- end -}}
-            {{- if .providerSecretName }}
+            {{- if $secretName }}
             - name: INVENTREE_SOCIAL_PROVIDERS
               valueFrom:
                 secretKeyRef:
-                  name: {{ .providerSecretName }}
+                  name: {{ $secretName }}
                   key: providers
             {{- end -}}
             {{- end -}}

@@ -68,10 +68,17 @@ global:
     #   - "allauth.socialaccount.providers.openid_connect"
     backends: []
 
+    # Create a Secret from `providers` and use it for INVENTREE_SOCIAL_PROVIDERS.
+    # If enabled and providerSecretName is empty, the name defaults to <fullname>-sso.
+    createSecret: false
+
+    # Provider configuration in YAML, rendered to JSON for INVENTREE_SOCIAL_PROVIDERS.
+    providers: {}
+
     # Secret name containing configuration for all the enabled providers.
     # Secret must have a key named `providers` with json-formatted data
     # containing configuration for all the providers.
-    providerSecretName:
+    providerSecretName: ""
     ## Example:
     ## SSO via Codeberg.org using `openid_connect`.
     # 0. Prepare a new OAuth2 application on Codeberg.org which
@@ -193,9 +200,8 @@ ingress:
 # -- Expose the service via gateway-api HTTPRoute
 # Requires Gateway API resources and suitable controller installed within the cluster
 # (see: https://gateway-api.sigs.k8s.io/guides/)
-# NB! Note that `httpRoute` is not fully integrated with Inventree application:
-# TODO: `hostNames` should be properly included in INVENTREE_TRUSTED_ORIGINS
-# and nginx `server_name` configuration.
+# HTTPRoute hostnames are included in INVENTREE_TRUSTED_ORIGINS and nginx
+# `server_name` configuration based on the scheme from global.siteUrl.
 httpRoute:
   # HTTPRoute enabled.
   enabled: false

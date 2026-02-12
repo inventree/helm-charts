@@ -12,8 +12,8 @@ icon: https://github.com/inventree/InvenTree/blob/master/assets/images/logo/inve
 type: application
 
 # Version info - CHANGEME
-version: 0.3.5
-appVersion: "1.1.12"
+version: 0.3.6
+appVersion: "1.1.11"
 
 # Artifacthub annotations
 artifacthub.io/license: MIT

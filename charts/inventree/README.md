@@ -1,15 +1,26 @@
-## Official InvenTree Chart
+# Official Inventree Chart
 
+![Version: 0.3.4](https://img.shields.io/badge/Version-0.3.4-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 1.1.11](https://img.shields.io/badge/AppVersion-1.1.11-informational?style=flat-square)
+
+Helm chart for InvenTree - The Open Source Inventory and PLM Solution
+
+**Homepage:** <https://inventree.org/>
+
+## Source Code
+
+* <https://github.com/inventree/InvenTree/>
+
+## Usage
 [Helm](https://helm.sh) must be installed to use the charts.  Please refer to
 Helm's [documentation](https://helm.sh/docs) to get started.
 
 Once Helm has been set up correctly, add the repo as follows:
 
-  helm repo add inventree https://inventree.github.io/helm-chart
+    helm repo add inventree https://inventree.github.io/helm-charts
 
 If you had already added this repo earlier, run `helm repo update` to retrieve
 the latest versions of the packages.  You can then run `helm search repo
-trendmend` to see the charts.
+inventree` to see the charts.
 
 To install the inventree chart:
 
@@ -19,5 +30,66 @@ To uninstall the chart:
 
     helm uninstall my-inventree
 
-Read the documentation regarding [configuration keys](https://docs.inventree.org/en/stable/start/config/).
-Issues regrading docker deployment should be reported to [inventree/helm-charts](https://github.com/inventree/helm-charts/issues) all other issues / feature requests should be routed to the primary issue tracker [inventree/inventree](https://github.com/inventree/InvenTree/issues)
+- Read the documentation regarding [configuration keys](https://docs.inventree.org/en/stable/start/config/).
+- Issues regrading docker deployment should be reported to [inventree/helm-charts](https://github.com/inventree/helm-charts/issues) all other issues / feature requests should be routed to the primary issue tracker [inventree/inventree](https://github.com/inventree/InvenTree/issues)
+
+
+## Values
+
+| Key | Type | Default | Description |
+|-----|------|---------|-------------|
+| affinity | object | `{}` |  |
+| autoscaling.enabled | bool | `false` |  |
+| autoscaling.maxReplicas | int | `100` |  |
+| autoscaling.minReplicas | int | `1` |  |
+| autoscaling.targetCPUUtilizationPercentage | int | `80` |  |
+| fullnameOverride | string | `""` |  |
+| global.adminSecret | string | `""` |  |
+| global.cacheSecrets | list | `[]` |  |
+| global.dbSecrets | list | `[]` |  |
+| global.emailSecrets | list | `[]` |  |
+| global.initEnabled | bool | `true` |  |
+| global.siteUrl | string | `"http://inventree.local"` |  |
+| global.ssoConfig.backends | list | `[]` |  |
+| global.ssoConfig.createSecret | bool | `false` |  |
+| global.ssoConfig.providers | object | `{}` |  |
+| global.ssoConfig.providerSecretName | string | `""` |  |
+| httpRoute | object | `{"annotations":{},"enabled":false,"hostnames":["chart-example.local"],"parentRefs":[{"name":"gateway","sectionName":"http"}],"rules":[{"matches":[{"path":{"type":"PathPrefix","value":"/headers"}}]}]}` | Expose the service via gateway-api HTTPRoute Requires Gateway API resources and suitable controller installed within the cluster (see: https://gateway-api.sigs.k8s.io/guides/) NB! Note that `httpRoute` is not fully integrated with Inventree application: TODO: `hostNames` should be properly included in INVENTREE_TRUSTED_ORIGINS and nginx `server_name` configuration. |
+| image.pullPolicy | string | `"IfNotPresent"` |  |
+| image.repository | string | `"inventree/inventree"` |  |
+| image.tag | string | `""` |  |
+| imagePullSecrets | list | `[]` |  |
+| ingress | object | `{}` | Configure Ingresses for Inventree application |
+| livenessProbe.httpGet.path | string | `"/"` |  |
+| livenessProbe.httpGet.port | string | `"http"` |  |
+| nameOverride | string | `""` |  |
+| nodeSelector | object | `{}` |  |
+| plugins.enabled | bool | `true` |  |
+| podAnnotations | object | `{}` |  |
+| podLabels | object | `{}` |  |
+| podSecurityContext | object | `{}` |  |
+| readinessProbe.httpGet.path | string | `"/"` |  |
+| readinessProbe.httpGet.port | string | `"http"` |  |
+| replicaCount | int | `1` |  |
+| resources | object | `{}` |  |
+| securityContext | object | `{}` |  |
+| service.port | int | `8000` |  |
+| service.type | string | `"ClusterIP"` |  |
+| serviceAccount.annotations | object | `{}` |  |
+| serviceAccount.automount | bool | `true` |  |
+| serviceAccount.create | bool | `true` |  |
+| serviceAccount.name | string | `""` |  |
+| serviceProxy.image | string | `"nginx"` |  |
+| serviceProxy.tag | string | `"stable"` |  |
+| tolerations | list | `[]` |  |
+| volumeMounts | list | `[]` |  |
+| volumes | list | `[]` |  |
+| worker.autoscaling.enabled | bool | `false` |  |
+| worker.autoscaling.maxReplicas | int | `100` |  |
+| worker.autoscaling.minReplicas | int | `1` |  |
+| worker.autoscaling.targetCPUUtilizationPercentage | int | `80` |  |
+| worker.service.port | int | `8000` |  |
+| worker.service.type | string | `"ClusterIP"` |  |
+
+----------------------------------------------
+Autogenerated from chart metadata using [helm-docs v1.14.2](https://github.com/norwoodj/helm-docs/releases/v1.14.2)

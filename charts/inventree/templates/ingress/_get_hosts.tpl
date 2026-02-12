@@ -2,6 +2,7 @@
 {{- define "ingress.listHosts" -}}
   {{- $rootContext := .data -}}
   {{- $data := list -}}
+  {{- $scheme := default "http" (regexFind "^[a-zA-Z][a-zA-Z0-9+.-]*" $rootContext.Values.global.siteUrl) -}}
 
   {{- $enabledIngresses := (include "ingress.getEnabled" (dict "rootContext" $rootContext ) | fromYaml ) -}}
 
@@ -13,6 +14,11 @@
       {{- else -}}
          {{- $data = (append $data (print "http://" .host)) -}}
       {{- end -}}
+    {{- end -}}
+  {{- end -}}
+  {{- if $rootContext.Values.httpRoute.enabled -}}
+    {{- range $rootContext.Values.httpRoute.hostnames -}}
+      {{- $data = (append $data (printf "%s://%s" $scheme .)) -}}
     {{- end -}}
   {{- end -}}
   {{- join "," ($data |uniq) | quote -}}
@@ -29,6 +35,11 @@
     {{- $ingressObject := (include "ingress.getById" (dict "rootContext" $rootContext "id" $id) | fromYaml) -}}
     {{- range $ingressObject.hosts -}}
       {{- $data = append $data .host -}}
+    {{- end -}}
+  {{- end -}}
+  {{- if $rootContext.Values.httpRoute.enabled -}}
+    {{- range $rootContext.Values.httpRoute.hostnames -}}
+      {{- $data = append $data . -}}
     {{- end -}}
   {{- end -}}
   {{- join " " ($data |uniq) -}}
