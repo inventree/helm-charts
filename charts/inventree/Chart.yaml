@@ -13,7 +13,7 @@ type: application
 
 # Version info - CHANGEME
 version: 0.4.23
-appVersion: "1.4.3"
+appVersion: "1.4.4"
 
 # Artifacthub annotations
 artifacthub.io/license: MIT
