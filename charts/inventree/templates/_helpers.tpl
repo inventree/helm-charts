@@ -86,14 +86,14 @@ Render secrets
 */}}
 {{- define "inventree.renderSecrets" -}}
   {{- range .data }}
-  - name: {{ .name }}
+- name: {{ .name }}
   {{- if .value }}
-    value: {{ .value | quote }}
+  value: {{ .value | quote }}
   {{- else if .valueFrom }}
-    valueFrom:
-      secretKeyRef:
-        name: {{ .valueFrom.secretKeyRef.name }}
-        key: {{ .valueFrom.secretKeyRef.key }}
+  valueFrom:
+    secretKeyRef:
+      name: {{ .valueFrom.secretKeyRef.name }}
+      key: {{ .valueFrom.secretKeyRef.key }}
   {{- else -}}
     {{- fail "Unhandled value, expecting either value for valueFrom" -}}
   {{- end -}}
@@ -158,3 +158,26 @@ Convert values to an object
 
   {{- $objectValues | toYaml -}}
 {{- end -}}
+
+{{/*
+Common environment variables for all InvenTree containers
+*/}}
+{{- define "inventree.env.common" -}}
+- name: INVENTREE_SITE_URL
+  value: {{ .Values.global.siteUrl }}
+{{- range $key, $value := .Values.env }}
+- name: {{ $key }}
+  value: {{ $value | quote }}
+{{- end }}
+{{- if .Values.plugins.enabled }}
+- name: INVENTREE_PLUGINS_ENABLED
+  value: "True"
+{{- end }}
+{{- (include "inventree.renderSecrets" (dict "data" .Values.global.dbSecrets)) }}
+{{- (include "inventree.renderSecrets" (dict "data" .Values.global.cacheSecrets)) }}
+{{- if not (empty .Values.global.cacheSecrets) }}
+- name: INVENTREE_CACHE_ENABLED
+  value: "True"
+{{- end -}}
+{{- (include "inventree.renderSecrets" (dict "data" .Values.global.emailSecrets)) }}
+{{- end }}
