@@ -47,8 +47,8 @@ spec:
             {{- range $key, $value := .Values.env }}
             - name: {{ $key }}
               value: {{ $value | quote }}
-            {{- end }}    
-          {{- (include "inventree.renderSecrets" (dict "data" .Values.global.dbSecrets)) | nindent 10 -}}
+            {{- end -}}
+            {{- (include "inventree.renderSecrets" (dict "data" .Values.global.dbSecrets)) | nindent 12 -}}
       {{- end -}}
       {{- with .Values.imagePullSecrets }}
       imagePullSecrets:
@@ -72,18 +72,12 @@ spec:
               containerPort: {{ .Values.service.port }}
               protocol: TCP
           env:
-            - name: INVENTREE_SITE_URL
-              value: {{ .Values.global.siteUrl }}
-           {{- range $key, $value := .Values.env }}
-            - name: {{ $key }}
-              value: {{ $value | quote }}
-           {{- end }}              
+            {{- include "inventree.env.common" . | nindent 12 -}}
+            {{- /*
+            Backend-specific environment variables 
+            */}}
             - name: INVENTREE_TRUSTED_ORIGINS
-              value: {{ (include "ingress.listHosts" (dict "data" . )) -}}
-            {{- if not (empty .Values.global.cacheSecrets) }}
-            - name: INVENTREE_CACHE_ENABLED
-              value: "True"
-            {{- end -}}
+              value: {{ (include "ingress.listHosts" (dict "data" . )) }}
             {{- with .Values.global.ssoConfig }}
             {{- if .backends }}
             - name: INVENTREE_SOCIAL_BACKENDS
@@ -97,13 +91,6 @@ spec:
                   key: providers
             {{- end -}}
             {{- end -}}
-            {{- if .Values.plugins.enabled }}
-            - name: INVENTREE_PLUGINS_ENABLED
-              value: "True"
-            {{- end }}
-          {{- (include "inventree.renderSecrets" (dict "data" .Values.global.cacheSecrets)) | nindent 10 -}}
-          {{- (include "inventree.renderSecrets" (dict "data" .Values.global.dbSecrets)) | nindent 10 -}}
-          {{- (include "inventree.renderSecrets" (dict "data" .Values.global.emailSecrets)) | nindent 10 -}}
           {{- if .Values.global.adminSecret }}
           envFrom:
             - secretRef:

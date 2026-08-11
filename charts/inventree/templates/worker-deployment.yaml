@@ -46,23 +46,7 @@ spec:
           #    containerPort: {{ .Values.worker.service.port }}
           #    protocol: TCP
           env:
-            - name: INVENTREE_SITE_URL
-              value: {{ .Values.global.siteUrl }}
-            {{- range $key, $value := .Values.env }}
-            - name: {{ $key }}
-              value: {{ $value | quote }}
-            {{- end }} 
-            {{- if not (empty .Values.global.cacheSecrets) }}
-            - name: INVENTREE_CACHE_ENABLED
-              value: "True"
-            {{- end -}}
-            {{- if .Values.plugins.enabled }}
-            - name: INVENTREE_PLUGINS_ENABLED
-              value: "True"
-            {{- end }}
-          {{- (include "inventree.renderSecrets" (dict "data" .Values.global.cacheSecrets)) | nindent 10 -}}
-          {{- (include "inventree.renderSecrets" (dict "data" .Values.global.dbSecrets)) | nindent 10 }}
-          {{- (include "inventree.renderSecrets" (dict "data" .Values.global.emailSecrets)) | nindent 10 -}}
+            {{- include "inventree.env.common" . | nindent 12 -}}
           {{/*
           # TODO: Figure out a way to check status
           {{- with .Values.worker.livenessProbe }}
