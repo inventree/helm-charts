@@ -38,10 +38,8 @@ spec:
               invoke migrate &&
               invoke static
           volumeMounts:
-            {{- if .Values.persistence.enabled }}
             - name: inventree-data
               mountPath: {{ .Values.persistence.mountPath }}
-            {{- end }}
           {{- with .Values.volumeMounts }}
             {{- toYaml . | nindent 12 }}
           {{- end }}
@@ -130,10 +128,8 @@ spec:
             {{- toYaml . | nindent 12 }}
           {{- end }}
           volumeMounts:
-            {{- if .Values.persistence.enabled }}
             - name: inventree-data
               mountPath: {{ .Values.persistence.mountPath }}
-            {{- end }}
           {{- with .Values.volumeMounts }}
             {{- toYaml . | nindent 12 }}
           {{- end }}
@@ -150,10 +146,8 @@ spec:
               mountPath: /etc/nginx/conf.d/default.conf
               subPath: default.conf
               readOnly: true
-            {{- if .Values.persistence.enabled }}
             - name: inventree-data
               mountPath: /var/www
-            {{- end }}
           {{- with .Values.volumeMounts }}
             {{- toYaml . | nindent 12 }}
           {{- end }}
@@ -161,11 +155,13 @@ spec:
         - name: proxy-conf
           configMap:
             name: nginx-proxy-config
-        {{- if .Values.persistence.enabled }}
         - name: inventree-data
+          {{- if .Values.persistence.enabled }}
           persistentVolumeClaim:
             claimName: {{ if .Values.persistence.existingClaim }}{{ .Values.persistence.existingClaim }}{{ else }}inventree-data{{ end }}
-        {{- end }}
+          {{- else }}
+          emptyDir: {}
+          {{- end }}
       {{- with .Values.volumes }}
         {{- toYaml . | nindent 8 }}
       {{- end }}
