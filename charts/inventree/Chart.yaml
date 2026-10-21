@@ -12,8 +12,8 @@ icon: https://raw.githubusercontent.com/inventree/InvenTree/refs/heads/master/as
 type: application
 
 # Version info - CHANGEME
-version: 0.4.33
-appVersion: "1.6.0"
+version: 0.4.34
+appVersion: "1.6.1"
 
 # Artifacthub annotations
 artifacthub.io/license: MIT
