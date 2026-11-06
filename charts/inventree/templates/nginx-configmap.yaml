@@ -48,6 +48,11 @@ data:
           proxy_set_header X-Original-URI $request_uri;
         }
 
+        # Backend auth endpoints for MFA flow
+        location ^~ /auth/ {
+          proxy_pass @app
+        }
+
         location / {
           # checks for static file, if not found proxy to app
           try_files $uri @app;
