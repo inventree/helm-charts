@@ -39,7 +39,7 @@ data:
           auth_request /auth;
         }
 
-        location /auth {
+        location = /auth {
           internal;
 
           proxy_pass http://127.0.0.1:{{ $.Values.service.port }}/auth/;
