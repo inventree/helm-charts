@@ -39,18 +39,13 @@ data:
           auth_request /auth;
         }
 
-        location /auth {
+        location = /auth {
           internal;
 
           proxy_pass http://127.0.0.1:{{ $.Values.service.port }}/auth/;
           proxy_pass_request_body off;
           proxy_set_header Content-Length "";
           proxy_set_header X-Original-URI $request_uri;
-        }
-
-        # Backend auth endpoints for MFA flow
-        location ^~ /auth/ {
-          proxy_pass @app
         }
 
         location / {
