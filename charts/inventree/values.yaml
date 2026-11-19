@@ -112,7 +112,8 @@ image:
 serviceProxy:
     image: nginx
     tag: stable
-
+    # securityContext for the proxy container only. Defaults to `securityContext`; this enables splitting InvenTree and nginx behaviour rules optionaly
+    securityContext: {}
 # This is for the secrets for pulling an image from a private repository more information can be found here: https://kubernetes.io/docs/tasks/configure-pod-container/pull-image-private-registry/
 imagePullSecrets: []
 # This is to override the chart name.
